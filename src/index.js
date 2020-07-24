@@ -1,18 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-// class Square extends React.Component {
 
-//     render() {
-//       return (
-//         <button className="square" onClick={()=>{this.props.onClick()}}>
-//           {this.props.value}
-//         </button>
-//       );
-//     }
-
-// }
-//* we don't need square component any more because it doesn't have its state
 class Square extends React.Component {
     constructor(props) {
         super(props)
@@ -26,9 +15,7 @@ class Square extends React.Component {
     
     
     render() {
-        //console.log(this.state.color); doesn't work
         let className = this.state.class
-        // this.setState({color:this.props.color});
         return (
             <button
                 style={{ background: this.props.color }}
@@ -40,31 +27,9 @@ class Square extends React.Component {
         )
     }
 }
-//this is what it returns for render into the board
-
 class Board extends React.Component {
-    // constructor(props) {
-    //     super(props)
-    //     this.state = {
-    //         squares: Array(9).fill(null),
-    //         xIsNext: true,
-    //     }
-    //     console.log(this.state)
-    // } all management of the squares goes to game component
-    // handleClick(i) {
-    //     const squares = this.props.squares.slice();
-    //     if (calculateWinner(squares)|| squares[i]){
-    //         return ;
-    //     }
-    //     squares[i] = this.state.xIsNext ? "X" : "O";
-    //     console.log(squares)
-    //     this.setState({ squares: squares,xIsNext:!this.state.xIsNext });
-    // }
     renderSquare(i) {
-        if (i === this.props.colorindex) {
-            //* console.log(this.props.colorindex); works
-            //*console.log("here"); 1 here and many there
-            // console.log(this.props.color);
+        if (i === this.props.colorindex || this.props.colorindex ==="all") {
             return (
                 <Square
                     color={this.props.color}
@@ -89,15 +54,6 @@ class Board extends React.Component {
     }
 
     render() {
-        //* we don't need it anymore as long as game manages information about the game
-        // const winner = calculateWinner(this.state.squares);
-        // let status ;
-        // if (winner){
-        //     status = "Winner:" + winner + " (Refresh the page to continue)";
-        // }
-        // else{
-        //     status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-        // }
         return (
             <div>
                 <div className="board-row">
@@ -160,13 +116,26 @@ class Game extends React.Component {
             color:color
         })
     }
+    handlerefreshClick(){
+        this.setState({history: [
+            {
+                squares: Array(9).fill(null),
+
+                move: null,
+            },
+        ],stepNumber:0,color:"white"})
+        this.state.xIsNext=true;
+        this.render();
+    }
     jumpTo(step) {
         this.setState({ stepNumber: step, xIsNext: step % 2 === 0 ,color:"white"});
         
     }
     render() {
         const history = this.state.history
+
         const current = history[this.state.stepNumber]
+        
         const winner = calculateWinner(current.squares)
         let status
         const moves = history.map((step, move) => {
@@ -176,22 +145,26 @@ class Game extends React.Component {
                 : 'Go to game start'
             return (
                 <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                    <button id = "movebutton" onClick={() => this.jumpTo(move)}>{desc}</button>
                 </li>
             )
         })
         if (winner) {
+            this.state.colorindex = "all"
             if (winner==="DRAW"){
                 status = "DRAW";
+                this.state.color = "gray";
             }else{
-                status = 'Winner: ' + winner
+                status = 'Winner: ' + winner;
+                this.state.color = winner==="X" ? "green" : "red";
+                
             }
         } else {
             status = 'Next player ' + (this.state.xIsNext ? 'X' : 'O')
         }
         return (
             <div className="game">
-                <div className="game-board">
+                <div className="game-board"> 
                     <Board
                         colorindex = {this.state.colorindex}
                         squares={current.squares}
@@ -203,7 +176,8 @@ class Game extends React.Component {
                 </div>
 
                 <div className="game-info">
-                    <div>{status}</div>
+                    <div id = "status">{status}</div>
+                    <button id = "status" onClick= {()=>{this.handlerefreshClick()}}>Refresh</button>
                     <ol>{moves}</ol>
                 </div>
             </div>
