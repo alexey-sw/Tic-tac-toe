@@ -161,7 +161,8 @@ class Game extends React.Component {
         })
     }
     jumpTo(step) {
-        this.setState({ stepNumber: step, xIsNext: step % 2 === 0 })
+        this.setState({ stepNumber: step, xIsNext: step % 2 === 0 ,color:"white"});
+        
     }
     render() {
         const history = this.state.history
@@ -180,7 +181,11 @@ class Game extends React.Component {
             )
         })
         if (winner) {
-            status = 'Winner: ' + winner
+            if (winner==="DRAW"){
+                status = "DRAW";
+            }else{
+                status = 'Winner: ' + winner
+            }
         } else {
             status = 'Next player ' + (this.state.xIsNext ? 'X' : 'O')
         }
@@ -230,6 +235,9 @@ function calculateWinner(squares) {
         ) {
             return squares[a]
         }
+    }
+    if(!squares.includes(null)){
+        return "DRAW"
     }
     return null
 }
