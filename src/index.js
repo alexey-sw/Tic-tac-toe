@@ -91,6 +91,7 @@ class Game extends React.Component {
             stepNumber: 0,
             colorindex: null,
         }
+        this.handlerefreshClick = this.handlerefreshClick.bind(this);
     }
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1) //* this is to delete the future which will be incorrect
